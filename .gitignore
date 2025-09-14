@@ -5,7 +5,8 @@ __pycache__/
 # Environment / secrets
 .env
 .env.*
-.gtfs_data/
+gtfs_data/
+*.zip
 
 # OS junk
 .DS_Store
