@@ -18,11 +18,13 @@ Look for sample projects that use Bedrock based on a postgres db, see if I can g
 
 |File/Folder      | Purpose              | 
 |-----------------|----------------------|
-|`data_gen.py`    | Generates Sample data|
-|`data.json`      | Our generated data   |
-|`main.py`        | Our driver           |
+|`load_gfts_to_rds.py`| Takes sample data from Washington Metro and Uploads it to AWS RDS|
+|`gfts_data`      | Unzipped files from washingron Metro API|
+|`main.py`        | Our driver - still empty...will use for bedrock I think        |
 
 ---
 ## General Notes
 
 This is a sample PoC project. Not intended for any financial, technical, legal, or practical use beyond the theoretical. We are here to prove the use of Amazon Bedrock, for certain exploratory purposes. That is all.
+
+source .venv/bin/activate
