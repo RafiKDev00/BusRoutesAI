@@ -1,0 +1,97 @@
+*** How Does our SQL methods work ***
+
+1. The Haversine Equation:
+  a. This code can be found in Haversine.sql and is the root of all our calculations
+  It implements a sql code that will work the following equation ->
+  The Equation For two points (lat1, lon1) and (lat2, lon2):
+      d = 2r arcsin(sqrt(sin^2(Δφ/2) + cos(φ1)cos(φ2)sin^2(Δλ/2)))
+      Δφ = φ2 − φ1 
+      Δλ = λ2 − λ1 
+      radius = 6371 km (Earth radius approx.)
+  In human speak, this translates into the distance between any given lat. and long.
+  points, accounting for the spherical nature of the world. GTFS data gives us
+  lat. and long. points to represent stops, so given 2 stops we can then calculate
+  the true distance between them. This is foundational. 
+2. Recalling our questions
+  a. Which route is the shortest? SOLVED
+      SOLUTION: We took a representative route, based off of the
+      trip_id field, and via haversine method calculated the distances between
+      the stops on the route.
+      CAVEAT: There's an obvious failing, 
+        ONE This assumes drivers always take the same route,
+        (we did not test all recorded routes)
+        TWO Here we take based off of trip_id, not Route_ID, a "trip" is a sequence
+        of stops, but a route can be many trips joined togethor, and many busses
+        can take the same trip, but not run the same route. For example: the 72 and
+        75 bus both drive down King George but they diverge after the hospital! 
+        So they share a trip_id, but not a Route_ID
+      WHY WE ARE OK WITH THIS: 
+        To every database there is it's own quirks, this is a simple proof of 
+        concept excersise, and getting through the weeds on this data will not 
+        neccasarily be helpful later on. STILL. It is useful to have an
+        understanding
+  b. Which route has the longest distance between 2 stops? SOLVED
+    SOLUTION: 
+      We iterated trip_ID by trip_ID, and in each trip_id iterated through the 
+      stops tracking the MAX distance between every stop. At the end, we returned
+      the trip_ID that had the longest gap.
+    CAVEAT: 
+      Once again, where we had used "route" it would be better to use "trip".
+      Although, in retrospect, it may have been easy to do route here.
+  c. Is Account X's routes "better" or "worse" than Account Y's routes, 
+  if we define route quality as average distance between stops? PARTIAL SOLUTION
+    SOLUTION: 
+    We aggregated all the stops in a route by route_id and took the average
+    distance
+    CAVEAT: 
+    A very partial solution, we do not have "account" data here, but we could in
+    theory, we would just need to track the owners (acount) of each routes, 
+    and compare at the end. Useful for seeing if bus routes could be made quicker/
+    need to be made more thorough. In short, there's a point of interest
+    Why does one thing work more for someone, or someone else?
+    WHY ARE WE OK WITH THIS:
+    I am not sure how the data is organized. There was no acound_ID or anything
+    remotely similar as verified by running the inspect_schema file. 
+    There were some extensive google documentations for the API which may have 
+    given us some pointers, but again, I thought beyond the scope of POC.
+
+3. Generated Data from running code (ok...technically top 10 answers to every query not just one)
+
+    === Shortest routes ===
+  {'route_id': 'C55', 'route_name': 'C55', 'total_km': Decimal('1.94')}
+  {'route_id': 'C43', 'route_name': 'C43', 'total_km': Decimal('3.42')}
+  {'route_id': 'C77', 'route_name': 'C77', 'total_km': Decimal('3.46')}
+  {'route_id': 'D72', 'route_name': 'D72', 'total_km': Decimal('4.09')}
+  {'route_id': 'C33', 'route_name': 'C33', 'total_km': Decimal('4.33')}
+  {'route_id': 'C75', 'route_name': 'C75', 'total_km': Decimal('4.57')}
+  {'route_id': 'C83', 'route_name': 'C83', 'total_km': Decimal('5.49')}
+  {'route_id': 'M20', 'route_name': 'M20', 'total_km': Decimal('5.63')}
+  {'route_id': 'A1X', 'route_name': 'A1X', 'total_km': Decimal('6.34')}
+  {'route_id': 'C26', 'route_name': 'C26', 'total_km': Decimal('6.46')}
+
+  === Longest single leg ===
+  {'route_id': 'F28', 'route_name': 'F28', 'longest_leg_km': Decimal('15.85')}
+  {'route_id': 'F83', 'route_name': 'F83', 'longest_leg_km': Decimal('15.39')}
+  {'route_id': 'F81', 'route_name': 'F81', 'longest_leg_km': Decimal('15.32')}
+  {'route_id': 'F29', 'route_name': 'F29', 'longest_leg_km': Decimal('9.47')}
+  {'route_id': 'F85', 'route_name': 'F85', 'longest_leg_km': Decimal('9.45')}
+  {'route_id': 'F19', 'route_name': 'F19', 'longest_leg_km': Decimal('7.29')}
+  {'route_id': 'A90', 'route_name': 'A90', 'longest_leg_km': Decimal('6.96')}
+  {'route_id': 'A28', 'route_name': 'A28', 'longest_leg_km': Decimal('6.79')}
+  {'route_id': 'P90', 'route_name': 'P90', 'longest_leg_km': Decimal('5.13')}
+  {'route_id': 'A25', 'route_name': 'A25', 'longest_leg_km': Decimal('4.67')}
+
+  === Avg spacing ===
+  {'route_id': 'C25', 'route_name': 'C25', 'avg_km_between_stops': Decimal('0.200')}
+  {'route_id': 'C35', 'route_name': 'C35', 'avg_km_between_stops': Decimal('0.200')}
+  {'route_id': 'C33', 'route_name': 'C33', 'avg_km_between_stops': Decimal('0.206')}
+  {'route_id': 'C13', 'route_name': 'C13', 'avg_km_between_stops': Decimal('0.208')}
+  {'route_id': 'D44', 'route_name': 'D44', 'avg_km_between_stops': Decimal('0.221')}
+  {'route_id': 'P33', 'route_name': 'P33', 'avg_km_between_stops': Decimal('0.221')}
+  {'route_id': 'C26', 'route_name': 'C26', 'avg_km_between_stops': Decimal('0.223')}
+  {'route_id': 'C43', 'route_name': 'C43', 'avg_km_between_stops': Decimal('0.228')}
+  {'route_id': 'C75', 'route_name': 'C75', 'avg_km_between_stops': Decimal('0.228')}
+  {'route_id': 'C71', 'route_name': 'C71', 'avg_km_between_stops': Decimal('0.228')}
+  ​
+
+   

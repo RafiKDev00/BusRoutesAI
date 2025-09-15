@@ -19,8 +19,11 @@ Look for sample projects that use Bedrock based on a postgres db, see if I can g
 |File/Folder      | Purpose              | 
 |-----------------|----------------------|
 |`load_gfts_to_rds.py`| Takes sample data from Washington Metro and Uploads it to AWS RDS|
-|`gfts_data`      | Unzipped files from washingron Metro API|
-|`main.py`        | Our driver - still empty...will use for bedrock I think        |
+|`anaylsis_queries.py`| SQL again written by GPT...but that's not why we're here...Explanations and validation as to WHY these queries work enclosed though (written by yours truly)|
+|`gfts_data`      | a folder of GTFS files downladed from Washington Metro websiter, These are not on GITHUB, you, user, will need to get then yourself, API rules|
+|`inspect_schema.py`| A quick script to check our database headings|
+|`sql_explanation_and_output.txt`|
+|`main.py`        | Our driver - still empty...might be useful for bedrock      |
 
 ---
 ## General Notes
